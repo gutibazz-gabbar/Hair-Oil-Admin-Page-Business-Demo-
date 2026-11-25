@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bonoja Admin — Dashboard</title>
+<script>try{var _t=localStorage.getItem("adt");if(!_t)_t=matchMedia("(prefers-color-scheme:dark)").matches?"dark":"light";if(_t=="dark")document.documentElement.classList.add("dark")}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600;700&family=Inter:wght@400;500;600&family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config={theme:{extend:{colors:{brand:{50:'#f1f6ec',100:'#e2ecd8',500:'#5f8f4d',600:'#3f7a4c',700:'#2f5d3a',800:'#244a2d'},gold:'#c9923a'},fontFamily:{sans:['Inter','Hind Siliguri','system-ui','sans-serif'],serif:['Fraunces','Hind Siliguri','Georgia','serif']}}}}
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+body{background:#f7f6f2}
+.card{background:#fff;border:1px solid #ebe8e0;border-radius:18px;box-shadow:0 1px 2px rgba(31,42,31,.04)}
+.nav-a{display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:12px;font-size:.9rem;font-weight:500;color:#57534e;transition:.15s;cursor:pointer}
+.nav-a:hover{background:#f5f4ef;color:#1c1917}
+.nav-a.on{background:#2f5d3a;color:#fff}
+.nav-a svg{width:19px;height:19px}
+::-webkit-scrollbar{height:6px;width:6px}::-webkit-scrollbar-thumb{background:#d6d3d1;border-radius:9px}
+
+html.dark{color-scheme:dark}
+.dark body{background:#0e1712;color:#e5ece0}
+.dark .card,.dark #sb,.dark .bg-white{background:#16221a}
+.dark .card,.dark #sb,.dark .border-stone-100,.dark .border-stone-200,.dark .border-stone-200\/70,.dark .border-stone-200\/80{border-color:#273a2d}
+.dark .divide-stone-100>*+*{border-color:#273a2d}
+.dark header{background:rgba(14,23,18,.86)}
+.dark .text-stone-900,.dark .text-stone-800{color:#eef3ea}
+.dark .text-stone-700,.dark .text-stone-600{color:#c7d1c3}
+.dark .text-stone-500{color:#9fae9d}
+.dark .text-stone-400{color:#7f8f7d}
+.dark .text-stone-200{color:#2a3d31}
+.dark .bg-stone-100,.dark .bg-stone-200{background:#223127}
+.dark .bg-stone-300{background:#3b4f41}
+.dark .bg-stone-50,.dark .bg-stone-50\/60{background:#1a281f}
+.dark .hover\:bg-stone-50\/70:hover,.dark .hover\:bg-stone-50:hover{background:#1c2b21}
+.dark .bg-brand-50{background:#1d3324}
+.dark .border-brand-100{border-color:#2d4a35}
+.dark .text-brand-700{color:#8fcf9d}
+.dark .nav-a{color:#aab7a8}.dark .nav-a:hover{background:#1d2c22;color:#fff}.dark .nav-a.on{background:#2f6b3d;color:#fff}
+.dark input,.dark select{color:#e5ece0;border-color:#2c4033}
+.dark .bg-amber-50,.dark .bg-amber-100{background:rgba(245,158,11,.16)}.dark .text-amber-700,.dark .text-amber-600{color:#fbbf24}
+.dark .bg-emerald-50,.dark .bg-emerald-100{background:rgba(16,185,129,.16)}.dark .text-emerald-700,.dark .text-emerald-800{color:#6ee7b7}
+.dark .bg-rose-50,.dark .bg-rose-100{background:rgba(244,63,94,.16)}.dark .text-rose-700,.dark .text-rose-600,.dark .text-rose-800{color:#fda4af}
+.dark .bg-sky-100{background:rgba(14,165,233,.18)}.dark .text-sky-800{color:#7dd3fc}
+.dark .bg-violet-100{background:rgba(139,92,246,.18)}.dark .text-violet-800{color:#c4b5fd}
+.dark .text-stone-700.bg-stone-200{color:#c7d1c3}
+html[lang=bn] body{line-height:1.7}
+html[lang=bn] *{letter-spacing:0 !important}
+html[lang=bn] .uppercase{text-transform:none}
+</style>
+</head>
+<body class="font-sans text-stone-800 antialiased">
+
+<div id="ov" class="fixed inset-0 bg-stone-900/40 z-30 hidden lg:hidden" onclick="menu(false)"></div>
+
+<!-- Sidebar -->
+<aside id="sb" class="fixed inset-y-0 left-0 w-64 bg-white border-r border-stone-200/80 z-40 -translate-x-full lg:translate-x-0 transition-transform flex flex-col">
+  <div class="h-16 flex items-center px-6 border-b border-stone-100">
+    <span class="font-serif text-2xl font-bold text-brand-700">Bonoja<span class="text-gold">.</span></span>
+    <span class="ml-2 text-[10px] font-semibold tracking-widest text-stone-400 uppercase mt-1">Admin</span>
+  </div>
+  <nav class="p-4 space-y-1 flex-1" id="nav">
+    <a class="nav-a on" data-p="Dashboard"><span data-ic="dash"></span>Dashboard</a>
+    <a class="nav-a" data-p="Orders"><span data-ic="orders"></span>Orders<span class="ml-auto text-[11px] bg-amber-100 text-amber-700 rounded-full px-2 py-0.5 font-semibold">23</span></a>
+    <a class="nav-a" data-p="Products"><span data-ic="box"></span>Products</a>
+    <a class="nav-a" data-p="Customers"><span data-ic="users"></span>Customers</a>
+    <a class="nav-a" data-p="Settings"><span data-ic="cog"></span>Settings</a>
+  </nav>
+  <div class="m-4 p-4 rounded-2xl bg-brand-50 border border-brand-100">
+    <p class="text-xs font-semibold text-brand-700">Shop pickup · Savar</p>
+    <p class="text-xs text-stone-500 mt-1 leading-relaxed">Open today until 8:00 PM. 3 pickup orders waiting.</p>
+  </div>
+</aside>
+
+<div class="lg:pl-64">
+  <!-- Top bar -->
+  <header class="sticky top-0 z-20 h-16 bg-[#f7f6f2]/85 backdrop-blur border-b border-stone-200/70 flex items-center gap-3 px-4 lg:px-8">
+    <button class="lg:hidden p-2 -ml-2 rounded-lg hover:bg-stone-200/60" onclick="menu(true)" aria-label="Open menu"><span data-ic="menu"></span></button>
+    <div class="relative flex-1 max-w-md">
+      <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-stone-400" data-ic="search"></span>
+      <input id="q" type="search" placeholder="Search orders, customers, products…" class="w-full h-10 pl-10 pr-12 rounded-xl bg-white border border-stone-200 text-sm placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-brand-500/40 focus:border-brand-500">
+      <kbd class="hidden sm:block absolute right-3 top-1/2 -translate-y-1/2 text-[10px] text-stone-400 border border-stone-200 rounded px-1.5 py-0.5">/</kbd>
+    </div>
+    <div class="ml-auto flex items-center gap-2 sm:gap-3">
+      <button id="lg" onclick="toggleLang()" class="h-10 px-3 rounded-xl bg-white border border-stone-200 text-xs font-semibold hover:border-stone-300" aria-label="Language">বাংলা</button>
+      <button id="tg" onclick="toggleTheme()" class="h-10 w-10 rounded-xl bg-white border border-stone-200 text-base hover:border-stone-300" aria-label="Toggle dark mode">🌙</button>
+      <div class="relative">
+        <button id="bell" class="relative p-2.5 rounded-xl bg-white border border-stone-200 hover:border-stone-300" aria-label="Notifications">
+          <span data-ic="bell"></span><span class="absolute top-2 right-2.5 w-2 h-2 rounded-full bg-rose-500 ring-2 ring-white"></span>
+        </button>
+        <div id="np" class="hidden absolute right-0 mt-2 w-80 card p-2 z-30">
+          <p class="px-3 py-2 text-xs font-semibold text-stone-500 uppercase tracking-wide">Notifications</p>
+          <div class="text-sm divide-y divide-stone-100">
+            <div class="px-3 py-2.5"><p class="font-medium">New order BN-10492</p><p class="text-xs text-stone-500">Nusrat Jahan · ৳809 · 11:42 AM</p></div>
+            <div class="px-3 py-2.5"><p class="font-medium">Low stock: Hair Care Bundle</p><p class="text-xs text-stone-500">Only 6 left, reorder level is 20</p></div>
+            <div class="px-3 py-2.5"><p class="font-medium">Card payment confirmed</p><p class="text-xs text-stone-500">BN-10491 · ৳1,999 · 10:17 AM</p></div>
+          </div>
+        </div>
+      </div>
+      <div class="flex items-center gap-3 pl-2 sm:pl-4 sm:border-l border-stone-200">
+        <div class="w-9 h-9 rounded-full bg-brand-700 text-white grid place-items-center text-[11px] font-semibold tracking-wide">AAK</div>
+        <div class="hidden sm:block leading-tight"><p class="text-sm font-semibold">AAK</p><p class="text-xs text-stone-500">Store admin</p></div>
+      </div>
+    </div>
+  </header>
+
+  <main class="px-4 lg:px-8 py-8 max-w-[1280px]">
+    <div class="flex flex-wrap items-end justify-between gap-4 mb-7">
+      <div>
+        <p class="text-sm text-stone-500">Thursday, 26 November 2026</p>
+        <h1 class="font-serif text-3xl font-semibold text-stone-900 mt-1">Good afternoon, AAK</h1>
+      </div>
+      <div class="flex gap-2">
+        <select id="rg" onchange="rangeDemo(this)" class="h-10 px-3 rounded-xl bg-white border border-stone-200 text-sm font-medium focus:outline-none"><option>Last 7 days</option><option>Last 30 days</option><option>This month</option></select>
+        <button class="h-10 px-4 rounded-xl bg-brand-700 hover:bg-brand-800 text-white text-sm font-medium transition" onclick="toast('Report export is not connected in this demo')">Export report</button>
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <section id="stats" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5"></section>
+
+    <!-- Chart + top products -->
+    <section class="grid grid-cols-1 xl:grid-cols-3 gap-5 mt-5">
+      <div class="card p-6 xl:col-span-2">
+        <div class="flex flex-wrap items-start justify-between gap-3">
+          <div>
+            <h2 class="font-serif text-xl font-semibold">Weekly sales</h2>
+            <p class="text-sm text-stone-500 mt-0.5">20 – 26 Nov · stacked by product</p>
+          </div>
+          <div class="flex items-center gap-1 p-1 bg-stone-100 rounded-xl text-sm font-medium" id="tog">
+            <button data-m="rev" class="px-3.5 py-1.5 rounded-lg bg-white shadow-sm">Revenue</button>
+            <button data-m="units" class="px-3.5 py-1.5 rounded-lg text-stone-500">Units</button>
+          </div>
+        </div>
+        <div class="flex flex-wrap gap-x-8 gap-y-2 mt-5" id="chs"></div>
+        <div class="relative h-72 mt-5"><canvas id="ch"></canvas></div>
+        <p id="chf" class="hidden text-sm text-stone-500">Chart library could not load. Check your internet connection.</p>
+      </div>
+      <div class="card p-6">
+        <div class="flex items-center justify-between"><h2 class="font-serif text-xl font-semibold">Top products</h2><span class="text-xs text-stone-400">This week</span></div>
+        <ol id="top" class="mt-5 space-y-5"></ol>
+      </div>
+    </section>
+
+    <!-- Business health -->
+    <section class="grid grid-cols-1 lg:grid-cols-3 gap-5 mt-5">
+      <div class="card p-6" id="sit"></div><div class="card p-6" id="rep"></div><div class="card p-6" id="sat"></div>
+    </section>
+
+    <!-- Orders + low stock -->
+    <section class="grid grid-cols-1 xl:grid-cols-3 gap-5 mt-5">
+      <div class="card xl:col-span-2 overflow-hidden">
+        <div class="flex items-center justify-between p-6 pb-4">
+          <h2 class="font-serif text-xl font-semibold">Recent orders</h2>
+          <a class="text-sm font-medium text-brand-700 hover:underline cursor-pointer" onclick="toast('Orders page is not built in this demo')">View all</a>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm">
+            <thead><tr class="text-left text-xs uppercase tracking-wide text-stone-400 border-y border-stone-100 bg-stone-50/60">
+              <th class="font-medium px-6 py-3">Order</th><th class="font-medium px-3 py-3">Customer</th><th class="font-medium px-3 py-3 hidden lg:table-cell">Product</th>
+              <th class="font-medium px-3 py-3 hidden md:table-cell">Payment</th><th class="font-medium px-3 py-3 text-right">Amount</th><th class="font-medium px-6 py-3">Status</th>
+            </tr></thead>
+            <tbody id="ot" class="divide-y divide-stone-100"></tbody>
+          </table>
+        </div>
+        <p id="oc" class="px-6 py-4 text-xs text-stone-400 border-t border-stone-100"></p>
+      </div>
+      <div class="card p-6">
+        <div class="flex items-center justify-between"><h2 class="font-serif text-xl font-semibold">Low stock</h2><span class="text-xs font-semibold text-rose-600 bg-rose-50 rounded-full px-2.5 py-1" id="lsn"></span></div>
+        <ul id="ls" class="mt-5 space-y-5"></ul>
+        <button class="mt-6 w-full h-10 rounded-xl border border-stone-200 text-sm font-medium hover:bg-stone-50 transition" onclick="toast('Purchase order draft created (demo)')">Create purchase order</button>
+      </div>
+    </section>
+    <section class="grid grid-cols-1 lg:grid-cols-2 gap-5 mt-5"><div class="card p-6" id="pay"></div><div class="card p-6" id="reg"></div></section>
+    <p class="text-xs text-stone-400 mt-8">Bonoja Admin · demo data for design purposes</p>
+  </main>
+</div>
+
+<div id="ts" class="fixed bottom-6 left-1/2 -translate-x-1/2 translate-y-24 bg-stone-900 text-white text-sm px-5 py-3 rounded-full shadow-lg transition-transform z-50"></div>
+
+<script>
+/* ---------- icons ---------- */
+const IC={
+dash:'<rect x="3.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.5"/>',
+orders:'<path d="M6 8h12l-1 12H7L6 8z"/><path d="M9 8a3 3 0 016 0"/>',
+box:'<path d="M12 3l8 4.5v9L12 21l-8-4.5v-9L12 3z"/><path d="M12 12l8-4.5M12 12v9M12 12L4 7.5"/>',
+users:'<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0113 0"/><circle cx="17" cy="9" r="2.5"/><path d="M17 14.5a5 5 0 014.5 5"/>',
+cog:'<path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/>',
+bell:'<path d="M6 16v-5a6 6 0 1112 0v5l1.5 2h-15L6 16z"/><path d="M10 20.5a2 2 0 004 0"/>',
+search:'<circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/>',
+menu:'<path d="M4 7h16M4 12h16M4 17h16"/>',
+trend:'<path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/>',
+clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+adduser:'<circle cx="10" cy="8" r="3.5"/><path d="M3.5 20a6.5 6.5 0 0113 0"/><path d="M19 8v6M16 11h6"/>'
+};
+const svg=(k,c)=>'<svg class="'+(c||"w-5 h-5")+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">'+IC[k]+'</svg>';
+document.querySelectorAll("[data-ic]").forEach(e=>e.innerHTML=svg(e.dataset.ic));
+
+/* ---------- data ---------- */
+const DAYS=["Fri 20","Sat 21","Sun 22","Mon 23","Tue 24","Wed 25","Thu 26"];
+const P=[
+ {n:"Hair Fall Control 250 ml",p:749, u:[14,17,12,19,16,21,18],c:"#2f5d3a"},
+ {n:"Scalp Care 250 ml",       p:749, u:[9,11,8,12,10,13,11],  c:"#6f9b57"},
+ {n:"Dry & Frizz Repair 250 ml",p:749,u:[7,9,6,8,9,10,8],      c:"#a9c58b"},
+ {n:"Starter 100 ml",          p:349, u:[11,13,9,12,14,15,13],c:"#c9923a"},
+ {n:"Hair Care Bundle 3×250 ml",p:1999,u:[3,4,2,4,3,5,4],      c:"#e3c58a"},
+ {n:"Refillable wooden oil comb",p:399,u:[4,5,3,5,6,6,5],      c:"#a8a29e"}
+];
+const ORDERS_PER_DAY=[38,47,32,48,46,56,47];
+const tot=a=>a.reduce((x,y)=>x+y,0);
+const fmt=n=>"৳"+n.toLocaleString("en-IN");
+const rev=p=>p.u.map(u=>u*p.p);
+const dayRev=i=>P.reduce((s,p)=>s+p.u[i]*p.p,0);
+const weekRev=tot(DAYS.map((_,i)=>dayRev(i)));
+
+const ORD=[
+ {id:"BN-10492",c:"Nusrat Jahan",city:"Dhaka",pr:"Hair Fall Control 250 ml",pay:"bKash",amt:809,t:"Today, 11:42 AM",s:"Pending"},
+ {id:"BN-10491",c:"Rakib Hasan",city:"Chattogram",pr:"Hair Care Bundle 3×250 ml",pay:"Card",amt:1999,t:"Today, 10:15 AM",s:"Pending"},
+ {id:"BN-10490",c:"Mehedi Hasan",city:"Savar",pr:"Scalp Care 250 ml + Wooden comb",pay:"Cash",amt:1148,t:"Today, 09:30 AM",s:"Delivered"},
+ {id:"BN-10489",c:"Tania Akter",city:"Sylhet",pr:"Dry & Frizz Repair 250 ml",pay:"Nagad",amt:869,t:"Yesterday, 8:58 PM",s:"Pending"},
+ {id:"BN-10488",c:"Farzana Yasmin",city:"Dhaka",pr:"Starter 100 ml",pay:"bKash",amt:409,t:"Yesterday, 6:21 PM",s:"Delivered"},
+ {id:"BN-10487",c:"Imran Hossain",city:"Rajshahi",pr:"Hair Fall Control 250 ml × 2",pay:"Cash",amt:1618,t:"Yesterday, 3:07 PM",s:"Cancelled"},
+ {id:"BN-10486",c:"Sumaiya Islam",city:"Khulna",pr:"Scalp Care 250 ml + Starter 100 ml",pay:"bKash",amt:1218,t:"24 Nov, 5:44 PM",s:"Delivered"},
+ {id:"BN-10485",c:"Arif Chowdhury",city:"Cumilla",pr:"Refillable wooden oil comb",pay:"Nagad",amt:519,t:"24 Nov, 1:12 PM",s:"Delivered"}
+];
+const STOCK=[
+ {n:"Hair Care Bundle 3×250 ml",s:6,m:20,u:"pcs"},
+ {n:"Neem leaf, dried",s:3,m:10,u:"kg"},
+ {n:"Refillable wooden oil comb",s:11,m:30,u:"pcs"},
+ {n:"Hair Fall Control 250 ml",s:18,m:40,u:"pcs"},
+ {n:"Amber glass bottles, 250 ml",s:140,m:400,u:"pcs"}
+];
+
+/* ---------- stats ---------- */
+const today=dayRev(6);
+const STATS=[
+ {l:"Today’s sale",v:fmt(today),d:"+6.8%",up:1,sub:"vs last Thursday",ic:"trend"},
+ {l:"Total orders",v:"2,184",d:"+9.1%",up:1,sub:tot(ORDERS_PER_DAY)+" in the last 7 days",ic:"orders"},
+ {l:"New customers",v:"14",d:"+3",up:1,sub:"71 this week",ic:"adduser"},
+ {l:"Pending orders",v:"23",d:"Needs action",up:0,warn:1,sub:"6 awaiting payment",ic:"clock"}
+];
+document.getElementById("stats").innerHTML=STATS.map(s=>{
+  const chip=s.warn?'bg-amber-50 text-amber-700':(s.up?'bg-emerald-50 text-emerald-700':'bg-rose-50 text-rose-700');
+  const arrow=s.warn?'':(s.up?'↑ ':'↓ ');
+  return '<div class="card p-6"><div class="flex items-center justify-between"><p class="text-sm text-stone-500">'+s.l+'</p><span class="w-9 h-9 rounded-xl bg-brand-50 text-brand-700 grid place-items-center">'+svg(s.ic,"w-[18px] h-[18px]")+'</span></div>'+
+  '<p class="font-serif text-[2rem] leading-none font-semibold mt-4">'+s.v+'</p>'+
+  '<div class="flex items-center gap-2 mt-3 text-xs"><span class="font-semibold rounded-full px-2 py-0.5 '+chip+'">'+arrow+s.d+'</span><span class="text-stone-400">'+s.sub+'</span></div></div>';
+}).join("");
+
+/* ---------- chart ---------- */
+const best=P.slice().sort((a,b)=>tot(b.u)-tot(a.u))[0],units=tot(P.map(p=>tot(p.u)));
+document.getElementById("chs").innerHTML=
+ '<div><p class="text-xs text-stone-400">Week revenue</p><p class="font-serif text-2xl font-semibold">'+fmt(weekRev)+'</p></div>'+
+ '<div><p class="text-xs text-stone-400">Units sold</p><p class="font-serif text-2xl font-semibold">'+units+'</p></div>'+
+ '<div><p class="text-xs text-stone-400">Best seller</p><p class="text-sm font-semibold mt-1.5 flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full" style="background:'+best.c+'"></span>'+best.n+' <span class="text-stone-400 font-normal">· '+tot(best.u)+' units</span></p></div>';
+let chart,mode="rev";
+function build(){
+  if(!window.Chart){document.getElementById("chf").classList.remove("hidden");return}
+  const dk=document.documentElement.classList.contains("dark");
+  const ds=P.map(p=>({label:tr(p.n),data:mode=="rev"?rev(p):p.u,backgroundColor:p.c,borderRadius:4,borderSkipped:false,maxBarThickness:38}));
+  if(chart)chart.destroy();
+  Chart.defaults.font.family="Inter, Hind Siliguri";Chart.defaults.color=dk?"#9fae9d":"#78716c";
+  chart=new Chart(document.getElementById("ch"),{type:"bar",data:{labels:DAYS.map(tr),datasets:ds},options:{
+    responsive:true,maintainAspectRatio:false,interaction:{mode:"index",intersect:false},
+    scales:{x:{stacked:true,grid:{display:false},border:{display:false}},y:{stacked:true,border:{display:false},grid:{color:dk?"#223127":"#f0eee8"},ticks:{callback:v=>mode=="rev"?"৳"+(v>=1000?v/1000+"k":v):v}}},
+    plugins:{legend:{position:"bottom",labels:{usePointStyle:true,pointStyle:"circle",boxWidth:7,padding:16}},
+      tooltip:{backgroundColor:dk?"#0b120e":"#1c1917",padding:12,cornerRadius:10,callbacks:{label:c=>" "+c.dataset.label+": "+(mode=="rev"?fmt(c.parsed.y):c.parsed.y+" "+tr("units")),footer:i=>tr("Total")+": "+(mode=="rev"?fmt(tot(i.map(x=>x.parsed.y))):tot(i.map(x=>x.parsed.y))+" "+tr("units"))}}}}});
+}
+document.getElementById("tog").onclick=e=>{const b=e.target.closest("button");if(!b)return;mode=b.dataset.m;
+  document.querySelectorAll("#tog button").forEach(x=>{const on=x==b;x.className="px-3.5 py-1.5 rounded-lg "+(on?"bg-white shadow-sm":"text-stone-500")});build()};
+build();
+
+/* ---------- top products ---------- */
+const TP=P.map(p=>({n:p.n,u:tot(p.u),r:tot(rev(p)),c:p.c})).sort((a,b)=>b.r-a.r).slice(0,5),mx=TP[0].r;
+document.getElementById("top").innerHTML=TP.map((p,i)=>
+ '<li><div class="flex items-center gap-3"><span class="w-6 h-6 rounded-full bg-stone-100 text-stone-500 text-xs font-semibold grid place-items-center">'+(i+1)+'</span>'+
+ '<div class="min-w-0 flex-1"><p class="text-sm font-medium truncate">'+p.n+'</p><p class="text-xs text-stone-400">'+p.u+' sold</p></div><p class="text-sm font-semibold">'+fmt(p.r)+'</p></div>'+
+ '<div class="h-1.5 rounded-full bg-stone-100 mt-2.5 ml-9"><div class="h-full rounded-full" style="width:'+Math.round(p.r/mx*100)+'%;background:'+p.c+'"></div></div></li>').join("");
+
+/* ---------- orders ---------- */
+const BADGE={Pending:["bg-amber-50 text-amber-700 ring-amber-600/20","bg-amber-500"],Delivered:["bg-emerald-50 text-emerald-700 ring-emerald-600/20","bg-emerald-500"],Cancelled:["bg-rose-50 text-rose-700 ring-rose-600/20","bg-rose-500"]};
+const AV=["bg-emerald-100 text-emerald-800","bg-amber-100 text-amber-800","bg-sky-100 text-sky-800","bg-rose-100 text-rose-800","bg-violet-100 text-violet-800","bg-stone-200 text-stone-700"];
+const ini=n=>n.split(" ").map(w=>w[0]).slice(0,2).join("");
+function orders(q){
+  q=(q||"").trim().toLowerCase();
+  const L=ORD.filter(o=>!q||(o.id+o.c+o.city+o.pr+o.pay+o.s).toLowerCase().includes(q));
+  document.getElementById("ot").innerHTML=L.length?L.map((o,i)=>{const b=BADGE[o.s];return '<tr class="hover:bg-stone-50/70 transition">'+
+   '<td class="px-6 py-3.5"><p class="font-medium">'+o.id+'</p><p class="text-xs text-stone-400">'+o.t+'</p></td>'+
+   '<td class="px-3 py-3.5"><div class="flex items-center gap-3"><span class="w-8 h-8 rounded-full grid place-items-center text-xs font-semibold '+AV[ORD.indexOf(o)%AV.length]+'">'+ini(o.c)+'</span><div><p class="font-medium whitespace-nowrap">'+o.c+'</p><p class="text-xs text-stone-400">'+o.city+'</p></div></div></td>'+
+   '<td class="px-3 py-3.5 text-stone-600 hidden lg:table-cell max-w-[210px]"><span class="line-clamp-2">'+o.pr+'</span></td>'+
+   '<td class="px-3 py-3.5 text-stone-600 hidden md:table-cell">'+o.pay+'</td>'+
+   '<td class="px-3 py-3.5 text-right font-semibold whitespace-nowrap">'+fmt(o.amt)+'</td>'+
+   '<td class="px-6 py-3.5"><span class="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium ring-1 ring-inset '+b[0]+'"><span class="w-1.5 h-1.5 rounded-full '+b[1]+'"></span>'+o.s+'</span></td></tr>'}).join("")
+  :'<tr><td colspan="6" class="px-6 py-10 text-center text-stone-400">No orders match “'+q.replace(/</g,"&lt;")+'”.</td></tr>';
+  document.getElementById("oc").textContent="Showing "+L.length+" of "+ORD.length+" recent orders";
+}
+orders();
+document.getElementById("q").oninput=e=>orders(e.target.value);
+document.addEventListener("keydown",e=>{if(e.key=="/"&&document.activeElement.tagName!="INPUT"){e.preventDefault();document.getElementById("q").focus()}});
+
+/* ---------- low stock ---------- */
+document.getElementById("lsn").textContent=STOCK.length+" items";
+document.getElementById("ls").innerHTML=STOCK.map(s=>{const r=s.s/s.m,crit=r<.35;
+ return '<li><div class="flex items-center justify-between gap-3"><p class="text-sm font-medium truncate">'+s.n+'</p><p class="text-xs font-semibold '+(crit?"text-rose-600":"text-amber-600")+' whitespace-nowrap">'+s.s+' '+s.u+' left</p></div>'+
+ '<div class="h-1.5 rounded-full bg-stone-100 mt-2"><div class="h-full rounded-full '+(crit?"bg-rose-500":"bg-amber-500")+'" style="width:'+Math.max(6,Math.round(r*100))+'%"></div></div>'+
+ '<p class="text-[11px] text-stone-400 mt-1.5">Reorder level: '+s.m+' '+s.u+'</p></li>'}).join("");
+
+/* ---------- business health ---------- */
+const $=id=>document.getElementById(id);
+const pct=(a,b,d=1)=>(a/b*100).toFixed(d);
+const MONTH={rev:1042500,target:1200000,elapsed:26/30},LASTWK=251980,WKT=300000,CANCELLED=10,nOrd=tot(ORDERS_PER_DAY);
+const mp=+pct(MONTH.rev,MONTH.target),ontrack=mp>=MONTH.elapsed*100-2,growth=(weekRev-LASTWK)/LASTWK*100;
+const ring=(p,c)=>{const L=2*Math.PI*44;return '<svg viewBox="0 0 110 110" class="w-28 h-28 -rotate-90"><circle cx="55" cy="55" r="44" fill="none" stroke="currentColor" stroke-width="9" class="text-stone-200"/><circle cx="55" cy="55" r="44" fill="none" stroke="'+c+'" stroke-width="9" stroke-linecap="round" stroke-dasharray="'+(L*p/100).toFixed(1)+' '+L.toFixed(1)+'"/></svg>'};
+const bar=(w,c)=>'<div class="h-1.5 rounded-full bg-stone-100 mt-2"><div class="h-full rounded-full" style="width:'+w+'%;background:'+c+'"></div></div>';
+const head=(t,sub,extra)=>'<div class="flex items-start justify-between gap-3"><div><h2 class="font-serif text-xl font-semibold">'+t+'</h2><p class="text-sm text-stone-500 mt-0.5">'+sub+'</p></div>'+(extra||"")+'</div>';
+
+/* sales situation */
+const SM=[["Growth vs last week",(growth>=0?"+":"")+growth.toFixed(1)+"%",growth>=0?"text-emerald-700":"text-rose-600"],["Weekly target",pct(weekRev,WKT)+"%",""],["Avg. order value",fmt(Math.round(weekRev/nOrd)),""],["Cancellation rate",pct(CANCELLED,nOrd)+"%",""]];
+$("sit").innerHTML=head("Sales situation","November target",'<span class="text-xs font-semibold rounded-full px-2.5 py-1 '+(ontrack?"bg-emerald-50 text-emerald-700":"bg-amber-50 text-amber-700")+'">'+(ontrack?"On track":"Behind pace")+'</span>')+
+ '<div class="flex items-center gap-5 mt-5"><div class="relative shrink-0">'+ring(mp,"#2f6b3d")+'<div class="absolute inset-0 grid place-items-center"><p class="font-serif text-2xl font-semibold">'+mp.toFixed(1)+'%</p></div></div>'+
+ '<div><p class="font-semibold">'+fmt(MONTH.rev)+'</p><p class="text-sm text-stone-400">/ '+fmt(MONTH.target)+'</p><p class="text-xs text-stone-400 mt-2">'+Math.round(MONTH.elapsed*100)+'% of month elapsed</p></div></div>'+
+ '<div class="grid grid-cols-2 gap-3 mt-6">'+SM.map(m=>'<div class="rounded-xl bg-stone-50 border border-stone-100 p-3.5"><p class="text-xs text-stone-400">'+m[0]+'</p><p class="font-serif text-xl font-semibold mt-1 '+m[2]+'">'+m[1]+'</p></div>').join("")+'</div>';
+
+/* repeat customers */
+const CUST=1640,REP=438,rp=REP/CUST*100;
+$("rep").innerHTML=head("Repeat customers","All time")+
+ '<p class="font-serif text-5xl font-semibold mt-5">'+rp.toFixed(1)+'%</p>'+
+ '<div class="flex items-center gap-2 mt-2"><span class="text-xs font-semibold rounded-full px-2 py-0.5 bg-emerald-50 text-emerald-700">+2.1 pts vs last month</span><span class="text-sm text-stone-500">Repeat customer rate</span></div>'+
+ '<div class="flex h-3 rounded-full overflow-hidden mt-6"><div class="bg-stone-300" style="width:'+(100-rp)+'%"></div><div class="bg-brand-600" style="width:'+rp+'%"></div></div>'+
+ '<div class="flex justify-between text-sm mt-3"><span class="flex items-center gap-2"><i class="w-2.5 h-2.5 rounded-full bg-stone-300"></i><span class="text-stone-500">One-time buyers</span><b>'+(CUST-REP).toLocaleString("en-US")+'</b></span><span class="flex items-center gap-2"><i class="w-2.5 h-2.5 rounded-full bg-brand-600"></i><span class="text-stone-500">Repeat buyers</span><b>'+REP+'</b></span></div>'+
+ '<div class="mt-6 divide-y divide-stone-100 text-sm">'+[["Repeat share of orders (7 days)",pct(98,nOrd)+"%"],["Avg. days between orders","58 days"],["Most reordered","Hair Fall Control 250 ml"]].map(r=>'<div class="flex justify-between gap-3 py-2.5"><span class="text-stone-500">'+r[0]+'</span><span class="font-medium text-right">'+r[1]+'</span></div>').join("")+'</div>';
+
+/* satisfaction */
+const RV=[[5,1050,"#2f6b3d"],[4,130,"#6f9b57"],[3,38,"#d4a53a"],[2,18,"#e08a5c"],[1,12,"#d6455d"]],rt=tot(RV.map(x=>x[1])),sat=(RV[0][1]+RV[1][1])/rt*100,avg=RV.reduce((a,x)=>a+x[0]*x[1],0)/rt;
+$("sat").innerHTML=head("Customer satisfaction","From product reviews")+
+ '<p class="font-serif text-5xl font-semibold mt-5">'+sat.toFixed(1)+'%</p><p class="text-sm text-stone-500 mt-2">satisfied (4–5★ reviews)</p>'+
+ '<div class="flex items-center gap-2 mt-3 text-sm"><span class="font-semibold text-gold">★ '+avg.toFixed(1)+'</span><span class="text-stone-400">from '+rt.toLocaleString("en-US")+' reviews</span></div>'+
+ '<div class="mt-5 space-y-2.5">'+RV.map(r=>'<div class="flex items-center gap-3 text-sm"><span class="w-8 text-stone-500">'+r[0]+'★</span><div class="flex-1 h-2 rounded-full bg-stone-100"><div class="h-full rounded-full" style="width:'+pct(r[1],rt)+'%;background:'+r[2]+'"></div></div><span class="w-12 text-right text-stone-500">'+r[1].toLocaleString("en-US")+'</span></div>').join("")+'</div>'+
+ '<p class="text-xs text-stone-400 mt-5">Neutral '+pct(RV[2][1],rt)+'% · Unsatisfied '+pct(RV[3][1]+RV[4][1],rt)+'%</p>';
+
+/* payment methods */
+const PAY=[["bKash",129,"#e2136e"],["Cash on delivery",85,"#78716c"],["Nagad",53,"#f6921e"],["Card",35,"#2563eb"],["Rocket",12,"#8c3494"]];
+$("pay").innerHTML=head("Payment methods","Last 7 days")+
+ '<p class="mt-4 text-sm font-medium">'+PAY[0][0]+' leads with '+pct(PAY[0][1],nOrd)+'% of orders</p>'+
+ '<div class="flex h-3 rounded-full overflow-hidden mt-4">'+PAY.map(p=>'<div style="width:'+pct(p[1],nOrd,2)+'%;background:'+p[2]+'"></div>').join("")+'</div>'+
+ '<ul class="mt-5 space-y-4">'+PAY.map(p=>'<li><div class="flex items-center gap-3 text-sm"><i class="w-2.5 h-2.5 rounded-full" style="background:'+p[2]+'"></i><span class="flex-1 font-medium">'+p[0]+'</span><span class="text-stone-400">'+p[1]+' orders</span><span class="w-14 text-right font-semibold">'+pct(p[1],nOrd)+'%</span></div></li>').join("")+'</ul>';
+
+/* regions */
+const REG=[["Dhaka",144],["Chattogram",44],["Sylhet",28],["Rajshahi",24],["Khulna",21],["Cumilla",15],["Others",38]];
+$("reg").innerHTML=head("Orders by region","Last 7 days")+
+ '<p class="mt-4 text-sm font-medium">'+REG[0][0]+' leads with '+pct(REG[0][1],nOrd)+'% of orders</p>'+
+ '<ul class="mt-5 space-y-3.5">'+REG.map(r=>'<li><div class="flex items-center gap-3 text-sm"><span class="flex-1 font-medium">'+r[0]+'</span><span class="text-stone-400">'+r[1]+' orders</span><span class="w-14 text-right font-semibold">'+pct(r[1],nOrd)+'%</span></div>'+bar(pct(r[1],nOrd,1),"#3f7a4c")+'</li>').join("")+'</ul>'+
+ '<div class="flex justify-between text-sm mt-6 pt-4 border-t border-stone-100"><span class="text-stone-500">On-time delivery</span><span class="font-semibold">96.4%</span></div>';
+
+/* ---------- ui ---------- */
+function menu(o){document.getElementById("sb").classList.toggle("-translate-x-full",!o);document.getElementById("ov").classList.toggle("hidden",!o)}
+let tt;function toast(m,ms){const t=document.getElementById("ts");t.textContent=m;t.classList.remove("translate-y-24");clearTimeout(tt);tt=setTimeout(()=>t.classList.add("translate-y-24"),ms||2200)}
+function rangeDemo(el){if(el.selectedIndex>0){toast("This is just a demo. Only the last 7 days of data is available.",4000);el.selectedIndex=0}}
+document.getElementById("nav").onclick=e=>{const a=e.target.closest(".nav-a");if(!a)return;
+  document.querySelectorAll(".nav-a").forEach(x=>x.classList.toggle("on",x==a));menu(false);
+  if(a.dataset.p!="Dashboard")toast(a.dataset.p+" page is not built in this demo")};
+const np=document.getElementById("np");
+document.getElementById("bell").onclick=e=>{e.stopPropagation();np.classList.toggle("hidden")};
+document.addEventListener("click",e=>{if(!np.contains(e.target))np.classList.add("hidden")});
+
+/* ---------- theme + language ---------- */
+var BN={"Admin": "অ্যাডমিন", "Dashboard": "ড্যাশবোর্ড", "Orders": "অর্ডার", "Products": "পণ্য", "Customers": "গ্রাহক", "Settings": "সেটিংস", "Shop pickup · Savar": "দোকান থেকে সংগ্রহ · সাভার", "Open today until 8:00 PM. 3 pickup orders waiting.": "আজ রাত ৮:০০ পর্যন্ত খোলা। ৩টি পিকআপ অর্ডার অপেক্ষায়।", "Notifications": "নোটিফিকেশন", "New order BN-10492": "নতুন অর্ডার BN-10492", "Nusrat Jahan · ৳809 · 11:42 AM": "নুসরাত জাহান · ৳809 · 11:42 AM", "Low stock: Hair Care Bundle": "স্টক কম: হেয়ার কেয়ার বান্ডেল", "Only 6 left, reorder level is 20": "মাত্র ৬টি বাকি, রিঅর্ডার লেভেল ২০", "Card payment confirmed": "কার্ড পেমেন্ট নিশ্চিত", "Store admin": "স্টোর অ্যাডমিন", "Thursday, 26 November 2026": "বৃহস্পতিবার, ২৬ নভেম্বর ২০২৬", "Good afternoon, AAK": "শুভ অপরাহ্ন, AAK", "Last 7 days": "গত ৭ দিন", "Last 30 days": "গত ৩০ দিন", "This month": "এই মাস", "Export report": "রিপোর্ট এক্সপোর্ট", "Weekly sales": "সাপ্তাহিক বিক্রি", "20 – 26 Nov · stacked by product": "২০ – ২৬ নভেম্বর · পণ্য অনুযায়ী", "Revenue": "আয়", "Units": "ইউনিট", "units": "ইউনিট", "Total": "মোট", "Chart library could not load. Check your internet connection.": "চার্ট লোড হয়নি। ইন্টারনেট সংযোগ দেখুন।", "Top products": "শীর্ষ পণ্য", "This week": "এই সপ্তাহ", "Recent orders": "সাম্প্রতিক অর্ডার", "View all": "সব দেখুন", "Order": "অর্ডার", "Customer": "গ্রাহক", "Product": "পণ্য", "Payment": "পেমেন্ট", "Amount": "পরিমাণ", "Status": "স্ট্যাটাস", "Low stock": "স্টক কম", "Create purchase order": "ক্রয় অর্ডার তৈরি করুন", "Bonoja Admin · demo data for design purposes": "Bonoja অ্যাডমিন · ডিজাইনের জন্য ডেমো ডেটা", "This is just a demo. Only the last 7 days of data is available.": "এটি শুধু একটি ডেমো। শুধু গত ৭ দিনের ডেটা আছে।", "Report export is not connected in this demo": "এই ডেমোতে রিপোর্ট এক্সপোর্ট যুক্ত নয়", "Purchase order draft created (demo)": "ক্রয় অর্ডারের খসড়া তৈরি হয়েছে (ডেমো)", "Today’s sale": "আজকের বিক্রি", "Total orders": "মোট অর্ডার", "New customers": "নতুন গ্রাহক", "Pending orders": "অপেক্ষমাণ অর্ডার", "vs last Thursday": "গত বৃহস্পতিবারের তুলনায়", "Needs action": "ব্যবস্থা দরকার", "Week revenue": "সাপ্তাহিক আয়", "Units sold": "বিক্রিত ইউনিট", "Best seller": "সেরা বিক্রিত", "Pending": "অপেক্ষমাণ", "Delivered": "ডেলিভারি হয়েছে", "Cancelled": "বাতিল", "bKash": "বিকাশ", "Nagad": "নগদ", "Card": "কার্ড", "Cash": "নগদ টাকা", "Rocket": "রকেট", "Cash on delivery": "ক্যাশ অন ডেলিভারি", "Nusrat Jahan": "নুসরাত জাহান", "Rakib Hasan": "রাকিব হাসান", "Mehedi Hasan": "মেহেদী হাসান", "Tania Akter": "তানিয়া আক্তার", "Farzana Yasmin": "ফারজানা ইয়াসমিন", "Imran Hossain": "ইমরান হোসেন", "Sumaiya Islam": "সুমাইয়া ইসলাম", "Arif Chowdhury": "আরিফ চৌধুরী", "Dhaka": "ঢাকা", "Chattogram": "চট্টগ্রাম", "Savar": "সাভার", "Sylhet": "সিলেট", "Rajshahi": "রাজশাহী", "Khulna": "খুলনা", "Cumilla": "কুমিল্লা", "Others": "অন্যান্য", "Hair Fall Control 250 ml": "চুল পড়া নিয়ন্ত্রণ 250 ml", "Scalp Care 250 ml": "স্ক্যাল্প কেয়ার 250 ml", "Dry & Frizz Repair 250 ml": "রুক্ষ ও শুষ্ক চুলের যত্ন 250 ml", "Starter 100 ml": "স্টার্টার 100 ml", "Hair Care Bundle 3×250 ml": "হেয়ার কেয়ার বান্ডেল 3×250 ml", "Refillable wooden oil comb": "রিফিলযোগ্য কাঠের তেল-চিরুনি", "Scalp Care 250 ml + Wooden comb": "স্ক্যাল্প কেয়ার 250 ml + কাঠের চিরুনি", "Hair Fall Control 250 ml × 2": "চুল পড়া নিয়ন্ত্রণ 250 ml × 2", "Scalp Care 250 ml + Starter 100 ml": "স্ক্যাল্প কেয়ার 250 ml + স্টার্টার 100 ml", "Neem leaf, dried": "শুকনো নিমপাতা", "Amber glass bottles, 250 ml": "অ্যাম্বার কাচের বোতল, 250 ml", "Fri 20": "শুক্র 20", "Sat 21": "শনি 21", "Sun 22": "রবি 22", "Mon 23": "সোম 23", "Tue 24": "মঙ্গল 24", "Wed 25": "বুধ 25", "Thu 26": "বৃহঃ 26", "Sales situation": "বিক্রির অবস্থা", "November target": "নভেম্বরের লক্ষ্য", "On track": "ঠিক পথে", "Behind pace": "পিছিয়ে আছে", "Growth vs last week": "গত সপ্তাহের তুলনায় প্রবৃদ্ধি", "Weekly target": "সাপ্তাহিক লক্ষ্য", "Avg. order value": "গড় অর্ডার মূল্য", "Cancellation rate": "বাতিলের হার", "Repeat customers": "পুনরায় কেনা গ্রাহক", "All time": "সর্বকালের", "Repeat customer rate": "পুনরায় কেনার হার", "One-time buyers": "একবার কেনা", "Repeat buyers": "বারবার কেনা", "Repeat share of orders (7 days)": "অর্ডারে রিপিট অংশ (৭ দিন)", "Avg. days between orders": "অর্ডারের মধ্যে গড় দিন", "Most reordered": "সবচেয়ে বেশি রিঅর্ডার", "Customer satisfaction": "গ্রাহক সন্তুষ্টি", "From product reviews": "পণ্যের রিভিউ থেকে", "satisfied (4–5★ reviews)": "সন্তুষ্ট (৪–৫★ রিভিউ)", "Payment methods": "পেমেন্ট পদ্ধতি", "Orders by region": "অঞ্চল অনুযায়ী অর্ডার", "On-time delivery": "সময়মতো ডেলিভারি"},BNA={"Search orders, customers, products…": "অর্ডার, গ্রাহক, পণ্য খুঁজুন…"},LANG="en",OR=new WeakMap(),ENT=document.title;
+function tr(s){return LANG=="bn"&&BN[s]!==undefined?BN[s]:s}
+function ptn(k){var m,n=function(x){return BN[x]||x};
+ if(m=k.match(/^(\d+) in the last 7 days$/))return "গত ৭ দিনে "+m[1];
+ if(m=k.match(/^(\d+) this week$/))return "এই সপ্তাহে "+m[1];
+ if(m=k.match(/^(\d+) awaiting payment$/))return m[1]+"টি পেমেন্টের অপেক্ষায়";
+ if(m=k.match(/^(\d+) sold$/))return m[1]+"টি বিক্রি";
+ if(m=k.match(/^· (\d+) units$/))return "· "+m[1]+" ইউনিট";
+ if(m=k.match(/^(\d+) (pcs|kg) left$/))return m[1]+" "+(m[2]=="kg"?"কেজি":"পিস")+" বাকি";
+ if(m=k.match(/^Reorder level: (\d+) (pcs|kg)$/))return "রিঅর্ডার লেভেল: "+m[1]+" "+(m[2]=="kg"?"কেজি":"পিস");
+ if(m=k.match(/^(\d+) items$/))return m[1]+"টি আইটেম";
+ if(m=k.match(/^Showing (\d+) of (\d+) recent orders$/))return "সাম্প্রতিক "+m[2]+"টির মধ্যে "+m[1]+"টি দেখানো হচ্ছে";
+ if(m=k.match(/^No orders match “(.*)”\.$/))return "“"+m[1]+"”-এর সাথে কোনো অর্ডার মেলেনি।";
+ if(m=k.match(/^(.+) page is not built in this demo$/))return n(m[1])+" পেজ এই ডেমোতে তৈরি হয়নি";
+ if(m=k.match(/^Today, (.+)$/))return "আজ, "+m[1];
+ if(m=k.match(/^Yesterday, (.+)$/))return "গতকাল, "+m[1];
+ if(m=k.match(/^(\d+) Nov, (.+)$/))return m[1]+" নভেম্বর, "+m[2];
+ if(m=k.match(/^(\d+) orders$/))return m[1]+"টি অর্ডার";
+ if(m=k.match(/^(\d+)% of month elapsed$/))return "মাসের "+m[1]+"% অতিবাহিত";
+ if(m=k.match(/^\+([\d.]+) pts vs last month$/))return "গত মাসের চেয়ে +"+m[1]+" পয়েন্ট";
+ if(m=k.match(/^(\d+) days$/))return m[1]+" দিন";
+ if(m=k.match(/^from ([\d,]+) reviews$/))return m[1]+"টি রিভিউ থেকে";
+ if(m=k.match(/^Neutral (.+) · Unsatisfied (.+)$/))return "নিরপেক্ষ "+m[1]+" · অসন্তুষ্ট "+m[2];
+ if(m=k.match(/^(.+) leads with (.+) of orders$/))return n(m[1])+" এগিয়ে, মোট অর্ডারের "+m[2];
+}
+function tn(x){
+  if(OR.has(x))return;var p=x.parentNode;if(!p||p.nodeName=="SCRIPT"||p.nodeName=="STYLE")return;
+  var v=x.nodeValue,k=v.replace(/\s+/g," ").trim();if(!k)return;
+  var b=BN[k];if(b===undefined)b=ptn(k);if(b===undefined)return;
+  OR.set(x,v);x.nodeValue=v.match(/^\s*/)[0]+b+v.match(/\s*$/)[0];
+}
+function walkT(r){if(r.nodeType==3){tn(r);return}if(r.nodeType!=1)return;var w=document.createTreeWalker(r,NodeFilter.SHOW_TEXT),n;while(n=w.nextNode())tn(n)}
+function applyLang(on){
+  LANG=on?"bn":"en";document.documentElement.lang=LANG;$("lg").textContent=on?"EN":"বাংলা";
+  var w=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT),n,L=[];while(n=w.nextNode())L.push(n);
+  L.forEach(function(x){if(on)tn(x);else if(OR.has(x)){x.nodeValue=OR.get(x);OR.delete(x)}});
+  var q=$("q");if(on){q.dataset.ph=q.placeholder;q.placeholder=BNA[q.placeholder]||q.placeholder}else if(q.dataset.ph){q.placeholder=q.dataset.ph}
+  document.title=on?"Bonoja অ্যাডমিন — ড্যাশবোর্ড":ENT;build();
+  try{localStorage.setItem("adl",LANG)}catch(e){}
+}
+function toggleLang(){applyLang(LANG!="bn")}
+new MutationObserver(function(ms){if(LANG!="bn")return;ms.forEach(function(m){if(m.type=="characterData")tn(m.target);else m.addedNodes.forEach(walkT)})}).observe(document.body,{childList:true,subtree:true,characterData:true});
+function setTheme(t){document.documentElement.classList.toggle("dark",t=="dark");$("tg").textContent=t=="dark"?"☀️":"🌙";try{localStorage.setItem("adt",t)}catch(e){}build()}
+function toggleTheme(){setTheme(document.documentElement.classList.contains("dark")?"light":"dark")}
+setTheme(document.documentElement.classList.contains("dark")?"dark":"light");
+try{if(localStorage.getItem("adl")=="bn")applyLang(true)}catch(e){}
+</script>
+</body>
+</html>
